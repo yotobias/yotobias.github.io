@@ -1,30 +1,84 @@
 ---
-title: "Portfolio CM"
-author: "Tobias Peeters"
-date: "2025-02-23"
-output: html_document
+title: "Storyboard"
+output: 
+  flexdashboard::flex_dashboard:
+    storyboard: true
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+Introduction
+====================================================
+
+In this portfolio we will be using a student musical corpus consisting of tracks submited by students of the course Computational Musicology.
+
+```{r}
 ```
 
-## R Markdown
+Visualisation
+====================================================
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r}
+library(tidyverse)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+compmus2025 <- read_csv("~/Documents/CM/compmus2025.csv")
 ```
 
-## Including Plots
+Column {.tabset}
+--------------------------------------------------------------------------
 
-You can also embed plots, for example:
+### Arousal
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+ggplot(compmus2025, aes(x=tempo, y=arousal)) + geom_point()
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+### Danceability
+
+```{r}
+ggplot(compmus2025, aes(x=tempo, y=danceability)) + geom_point()
+```
+
+### Engagingness
+
+```{r}
+ggplot(compmus2025, aes(x=tempo, y=engagingness)) + geom_point()
+```
+
+### Instrumentalness
+
+```{r}
+ggplot(compmus2025, aes(x=tempo, y=instrumentalness)) + geom_point()
+```
+
+### Valence
+
+```{r}
+ggplot(compmus2025, aes(x=tempo, y=valence)) + geom_point()
+```
+
+Column {.tabset}
+------------------------------------------------------
+### Arousal x Engagingness
+
+```{r}
+ggplot(compmus2025, aes(x=arousal, y=engagingness)) + geom_point()
+```
+
+### Arousal x Instrumentalness
+
+```{r}
+ggplot(compmus2025, aes(x=arousal, y=instrumentalness)) + geom_point()
+```
+
+### Arousal x Danceability
+
+```{r}
+ggplot(compmus2025, aes(x=arousal, y=danceability)) + geom_point()
+```
+
+
+
+Conclusion
+====================================================
+
+```{r}
+```
