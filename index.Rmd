@@ -5,24 +5,15 @@ output:
     storyboard: true
 ---
 
-Cepstrogram
+Chromogram
 ====================================================
 
 
 ```{r}
-library(audio)
-library(tuneR)
-library(seewave)
 library(tidyverse)
-library(reshape2)
-library(soundgen)
+source("compmus.R")
 
-
-compmus2025 <- read_csv("~/Documents/CM/compmus2025.csv")
-
-track_1 <- readMP3("~/Documents/CM/compmus-corpus-2025/tobias-p-1.mp3")
-track_2 <- readMP3("~/Documents/CM/compmus-corpus-2025/tobias-p-2.mp3")
-
+compmus2025 <- read_csv("compmus2025.csv")
 ```
 
 Column {.tabset}
@@ -30,74 +21,44 @@ Column {.tabset}
 ### Track 1 
 
 ```{r}
-audio <- readMP3("~/Documents/CM/compmus-corpus-2025/tobias-p-1.mp3")
-if (audio@stereo) { audio <- mono(audio, "left") }
-
-compute_chroma <- function(wave, sr, win_size = 2048, hop_size = 512) {
-  n_frames <- floor((length(wave) - win_size) / hop_size)
-  chroma <- matrix(0, nrow = 12, ncol = n_frames)
-  for (i in 1:n_frames) {
-    frame <- wave[(1 + (i - 1) * hop_size):((i - 1) * hop_size + win_size)]
-    spec <- abs(fft(frame))
-    spec <- spec[1:(win_size / 2)]
-    spec_length <- length(spec)
-    if (spec_length %% 12 != 0) {
-      spec <- c(spec, rep(0, 12 - (spec_length %% 12)))
-    }
-    chroma[, i] <- rowSums(matrix(spec, nrow = 12))
-  }
-  return(chroma)
-}
-
-chroma <- compute_chroma(audio@left, audio@samp.rate)
-chroma_df <- as.data.frame(t(chroma))
-colnames(chroma_df) <- c("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
-chroma_df$time <- seq(0, nrow(chroma_df) - 1) * (length(audio@left) / audio@samp.rate) / nrow(chroma_df)
-
-chroma_long <- melt(chroma_df, id.vars = "time", variable.name = "pitch", value.name = "intensity")
-
-ggplot(chroma_long, aes(x = time, y = pitch, fill = intensity)) +
-  geom_tile() +
-  scale_fill_gradient(low = "white", high = "blue") +
-  labs(title = "Chromagram", x = "Time (s)", y = "Pitch Class", fill = "Intensity") +
-  theme_minimal()
+"features/tobias-p-1.json" |>                           
+  compmus_chroma(norm = "chebyshev") |>                 
+  ggplot(aes(x = time, y = pc, fill = value)) + 
+  geom_raster() +
+  scale_y_continuous(
+    breaks = 0:11,
+    minor_breaks = NULL,
+    labels = c(
+                "C", "C#|Db", "D", "D#|Eb",
+                "E", "F", "F#|Gb", "G",
+                "G#|Ab", "A", "A#|Bb", "B"
+              )
+  ) +
+  scale_fill_viridis_c(guide = "none") +              
+  labs(x = "Time (s)", y = NULL, fill = NULL) +
+  theme_classic()   
 ```
 
 
 ### Track 2
 
 ```{r}
-audio <- readMP3("~/Documents/CM/compmus-corpus-2025/tobias-p-2.mp3")
-if (audio@stereo) { audio <- mono(audio, "left") }
-
-compute_chroma <- function(wave, sr, win_size = 2048, hop_size = 512) {
-  n_frames <- floor((length(wave) - win_size) / hop_size)
-  chroma <- matrix(0, nrow = 12, ncol = n_frames)
-  for (i in 1:n_frames) {
-    frame <- wave[(1 + (i - 1) * hop_size):((i - 1) * hop_size + win_size)]
-    spec <- abs(fft(frame))
-    spec <- spec[1:(win_size / 2)]
-    spec_length <- length(spec)
-    if (spec_length %% 12 != 0) {
-      spec <- c(spec, rep(0, 12 - (spec_length %% 12)))
-    }
-    chroma[, i] <- rowSums(matrix(spec, nrow = 12))
-  }
-  return(chroma)
-}
-
-chroma <- compute_chroma(audio@left, audio@samp.rate)
-chroma_df <- as.data.frame(t(chroma))
-colnames(chroma_df) <- c("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
-chroma_df$time <- seq(0, nrow(chroma_df) - 1) * (length(audio@left) / audio@samp.rate) / nrow(chroma_df)
-
-chroma_long <- melt(chroma_df, id.vars = "time", variable.name = "pitch", value.name = "intensity")
-
-ggplot(chroma_long, aes(x = time, y = pitch, fill = intensity)) +
-  geom_tile() +
-  scale_fill_gradient(low = "white", high = "blue") +
-  labs(title = "Chromagram", x = "Time (s)", y = "Pitch Class", fill = "Intensity") +
-  theme_minimal()
+"features/tobias-p-2.json" |>                          
+  compmus_chroma(norm = "chebyshev") |>                
+  ggplot(aes(x = time, y = pc, fill = value)) + 
+  geom_raster() +
+  scale_y_continuous(
+    breaks = 0:11,
+    minor_breaks = NULL,
+    labels = c(
+                "C", "C#|Db", "D", "D#|Eb",
+                "E", "F", "F#|Gb", "G",
+                "G#|Ab", "A", "A#|Bb", "B"
+              )
+  ) +
+  scale_fill_viridis_c(guide = "none") +             
+  labs(x = "Time (s)", y = NULL, fill = NULL) +
+  theme_classic()   
 ```
 
 Introduction
