@@ -217,6 +217,20 @@ Column {.tabset}
   theme_classic() 
 ```
 
+### Tempogram Track 1
+
+```{r}
+"features/tobias-p-1.json" |>
+  compmus_tempogram(window_size = 8, hop_size = 1, cyclic = FALSE) |>
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+```
+
+
+
 Track 2 {data-navmenu="My Tracks" data-icon="ion-ios-musical-note"}
 ====================================================
 
@@ -330,6 +344,17 @@ Column {.tabset}
 ```
 
 
+### Tempogram Track 2
+
+```{r}
+"features/tobias-p-2.json" |>
+  compmus_tempogram(window_size = 8, hop_size = 1, cyclic = FALSE) |>
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+```
 
 Introduction
 ====================================================
@@ -345,6 +370,13 @@ Visualisation
 
 Column {.tabset}
 --------------------------------------------------------------------------
+
+
+### Tempi Historgram
+
+```{r}
+ggplot(compmus2025, aes(x=tempo)) + geom_histogram()
+```
 
 ### Arousal
 
@@ -395,6 +427,7 @@ ggplot(compmus2025, aes(x=arousal, y=instrumentalness)) + geom_point()
 ```{r}
 ggplot(compmus2025, aes(x=arousal, y=danceability)) + geom_point()
 ```
+
 
 
 
