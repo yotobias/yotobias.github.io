@@ -9,7 +9,7 @@ output:
 ```{r}
 library(tidyverse)
 source("compmus.R")
-
+library(cowplot)
 compmus2025 <- read_csv("compmus2025.csv")
 ```
 
@@ -102,16 +102,60 @@ key_templates <-
 ```
 
 
+Introduction
+====================================================
+#### **Tools**
+In this portfolio we will be using a student musical corpus consisting of tracks submitted by students of the course Computational Musicology.  
+Every student including myself has submitted two tracks two the corpus.  
+We have also been given access to high-level and low level features datasets.  
+
+#### **Track Selection** 
+For the creation of the two tracks i used the generative AI tools Udio and Suno.  
+I wanted to create two tracks from two substantially different genres which contain a variety of different instruments.  
+The genres i ended up choosing were jazz and metal.  
+I decided not to generate any music with vocals as they always sound a bit off.  
+I am very happy with the results of both tracks and hope the difference in instruments can help me gain more insight into music features like timbre.  
+  
+ - **Using Udio, prompts for track 1 (Jazz track):**  
+jazz, brazz instruments, key of B flat, piano, jazz band, cello, guitar, drums, saxophone, piano solo, saxophone solo, drum solo,  
+  
+  
+ - **Using Suno, prompts for track 2 (Metal track):**  
+electric doom metal, dark, e key, electric, metal, low, doom metal  
+  
+  
+  
+  
+#### **Goal**
+The goal of this portfolio is to analyze the student musical corpus with the focus on the two tracks i have submitted.  
+I will start of by creating multiple graphs for my two tracks to not only analyze each track individually but also compare them.  
+Following this i will try to get a better understanding of feature patterns in the student musical corpus using correlation graphs and unsupervised learning.  
+This should also give us a better idea where my two tracks fit inside the pattern of the corpus.
+
+
+```{r}
+```
+
+
+
 Track 1 {data-navmenu="My Tracks" data-icon="ion-ios-musical-note"}
 ====================================================
 
 Column {.tabset}
 --------------------------------------------------------------------------
-
-
 ### Chromagram Track 1 
+  
+#### Analysis
+Looking at the chromagram from track 1, we see that there isn't a consistent pattern.  
+A variety of different pitches seem to peak throughout the song.  
+This could be related to the fact that jazz songs often have key changes.  
+However we do see a lack of presence in the B flat pitch.  
+This might point to a failure in the generative AI to follow the B flat prompt.
 
-```{r}
+
+#### Chromagram
+
+```{r, fig.width=12, fig.height=7}
 "features/tobias-p-1.json" |>                           
   compmus_chroma(norm = "euclidean") |>                 
   ggplot(aes(x = time, y = pc, fill = value)) + 
@@ -130,10 +174,16 @@ Column {.tabset}
   theme_classic()   
 ```
 
-
+<!--
 ### Cepstrogram Track 1
 
-```{r}
+#### Analysis
+
+
+#### Cepstrogram
+
+
+```{r,  fig.width=12, fig.height=7}
 "features/tobias-p-1.json" |>                           # Change the track
   compmus_mfccs(norm = "euclidean") |>                  # Change the norm
   ggplot(aes(x = time, y = mfcc, fill = value)) + 
@@ -147,10 +197,19 @@ Column {.tabset}
   theme_classic()
 ```
 
+--->
+
 
 ### Chroma-based self-similarity track 1
 
-```{r}
+#### Analysis
+From the chroma-based self-similarity chart we can see that there isn't a coherent pattern or diagonal line which could display repeated sections.  
+However there are a lot of bright areas indication a strong harmonic similarity throughout the song.  
+Next to the brighter areas we often see these blocks of very dark regions which might imply a key change in the song.
+
+#### Chroma-based self-similarity
+
+```{r, fig.width=12, fig.height=7}
 "features/tobias-p-1.json" |>                           # Change the track
   compmus_chroma(norm = "identity") |>                 # Change the norm
   compmus_self_similarity(
@@ -167,7 +226,16 @@ Column {.tabset}
 
 ### Timbre-based self-similarity track 1
 
-```{r}
+#### Analysis
+Looking at the timbre-based self-similarity we don't see any major changes in brightness.  
+There is a faint pattern visible in the beginning of the song however this pattern fades as the song goes on.  
+The faint pattern might imply that there is a greater timbre similarity in the first 50 seconds of the song.  
+This could mean that during the first 50 second a certain set of instruments is repeatedly playing a certain riff or is playing an intro which has a consistent timbre.
+
+
+#### Timbre-based self-similarity
+
+```{r, fig.width=12, fig.height=7}
 "features/tobias-p-1.json" |>                           # Change the track
   compmus_mfccs(norm = "euclidean") |>                  # Change the norm
   compmus_self_similarity(
@@ -185,7 +253,17 @@ Column {.tabset}
 
 ### Chordogram Track 1
 
-```{r}
+#### Analysis
+The chordogram does not display a clear chord structure.  
+This does correlate with the lack of patterns in the chromagram.  
+The chords seem to change often throughout the song which we can see from the chordogram not having a clear horizontal line.  
+We do however see a lot more dark regions around the C major, C7, A minor, D7, A7, F7, D minor, C minor and F minor.  
+The fact that there is a lot of presence in the dominant 7ths does correlate with the properties of Jazz.
+
+
+#### Chordogram Track
+
+```{r, fig.width=12, fig.height=7}
 "features/tobias-p-1.json" |> 
   compmus_chroma(norm = "euclidean") |> 
   compmus_match_pitch_templates(
@@ -199,6 +277,8 @@ Column {.tabset}
   labs(x = "Time (s)", y = "Template", fill = NULL) +
   theme_classic() 
 ```
+
+<!--
 
 ### keyagram Track 1
 
@@ -216,10 +296,22 @@ Column {.tabset}
   labs(x = "Time (s)", y = "Template", fill = NULL) +
   theme_classic() 
 ```
+--->
+
 
 ### Tempogram Track 1
 
-```{r}
+#### Analysis
+Looking at the tempogram of track 1 we can see that the tempo is not stable throughout the song.  
+There is a big drop in tempo at the halfway mark of the song.  
+After this drop the tempo starts increasing again.  
+This abrupt tempo change is called rubato which is a musical term for playing with rhythmic freedom.  
+Rubato is a common style in jazz music.
+
+
+#### Tempogram Track
+
+```{r, fig.width=12, fig.height=7}
 "features/tobias-p-1.json" |>
   compmus_tempogram(window_size = 8, hop_size = 1, cyclic = FALSE) |>
   ggplot(aes(x = time, y = bpm, fill = power)) +
@@ -239,8 +331,18 @@ Column {.tabset}
 
 ### Chromagram Track 2
 
-```{r}
-"features/tobias-p-2.json" |>                          
+#### Analysis
+Looking at the chromagram from track 2, we see a strong presence in the pitch classes C, D flat, G, and A flat.  
+This might point to it being in the key of c with the mode being phrygian.  
+This would not be surprising as the phrygian mode is very popular in the metal genre because of it's dark sound.  
+However, i did have "e key" in my prompts which means the generative AI was not able to follow that particular prompt to set the key of the generated song.
+
+#### Chromagram
+
+
+```{r,  fig.width=12, fig.height=7}
+
+  "features/tobias-p-2.json" |>                          
   compmus_chroma(norm = "euclidean") |>                
   ggplot(aes(x = time, y = pc, fill = value)) + 
   geom_raster() +
@@ -256,11 +358,18 @@ Column {.tabset}
   scale_fill_viridis_c(guide = "none") +             
   labs(x = "Time (s)", y = NULL, fill = NULL) +
   theme_classic()   
-```
 
+```
+<!--
 ### Cepstrogram Track 2
 
-```{r}
+#### Analysis
+
+
+#### Cepstrogram
+
+
+```{r,  fig.width=12, fig.height=7}
 "features/tobias-p-2.json" |>                           # Change the track
   compmus_mfccs(norm = "euclidean") |>                  # Change the norm
   ggplot(aes(x = time, y = mfcc, fill = value)) + 
@@ -273,11 +382,20 @@ Column {.tabset}
   labs(x = "Time (s)", y = "Coefficient Number", fill = NULL) +
   theme_classic()
 ```
-
+--->
 
 ### Chroma-based self-similarity track 2
 
-```{r}
+#### Analysis
+Here we see a chroma-based self-similarity with a more noticable pattern which implies there is repetition.  
+This makes sense as in metal you do often have a certain riff playing repeatedly and also a chorus.
+The bright areas are not as bright but the darker areas also seem to be not completely dark.  
+There are however large dark regions which might be transitions between a verse and a chorus for example.
+
+#### Chroma-based self-similarity
+
+```{r, fig.width=12, fig.height=7}
+
 "features/tobias-p-2.json" |>                           # Change the track
   compmus_chroma(norm = "identity") |>                 # Change the norm
   compmus_self_similarity(
@@ -291,10 +409,19 @@ Column {.tabset}
   theme_classic()                                      # Change the theme?
 ```
 
-
 ### Timbre-based self-similarity track 2
 
-```{r}
+
+#### Analysis
+From the Timbre-based self-similarity chart of track 2 we can see that there is a strong similarity at 3 intervals in the song.  
+We can see this from the bright horizontal and vertical lines crossing the chart at these intervals.  
+These lines most likely display the chorus of the song where all the instruments are playing the same part of the song the same way three times.  
+This causes the timbre to be similar in these parts therefore showing up as a bright area in the chart.  
+The rest of the song seems to be not have a lot of similarities in timbre excluding some small exceptions where there is a short bright line in the chart.
+
+#### Timbre-based self-similarity
+
+```{r, fig.width=12, fig.height=7}
 "features/tobias-p-2.json" |>                           # Change the track
   compmus_mfccs(norm = "euclidean") |>                  # Change the norm
   compmus_self_similarity(
@@ -309,9 +436,18 @@ Column {.tabset}
 ```
 
 
+
 ### Chordogram Track 2
 
-```{r}
+#### Analysis
+This chordogram shows clear presences at C major, C minor and C7 there are also dark areas at A7, D7, Ab minor, Ab7 and F minor but these are not as strong.  
+From this we can conclude that track 2 is centered around C.  
+This also seems to have a good amount of presence in dominant 7ths which might imply some jazz influence in the song.
+
+
+#### Chordogram Track
+
+```{r, fig.width=12, fig.height=7}
 "features/tobias-p-2.json" |> 
   compmus_chroma(norm = "euclidean") |> 
   compmus_match_pitch_templates(
@@ -325,6 +461,8 @@ Column {.tabset}
   labs(x = "Time (s)", y = "Template", fill = NULL) +
   theme_classic() 
 ```
+
+<!--
 
 ### keyagram Track 2
 
@@ -342,11 +480,20 @@ Column {.tabset}
   labs(x = "Time (s)", y = "Template", fill = NULL) +
   theme_classic() 
 ```
+-->
 
 
 ### Tempogram Track 2
 
-```{r}
+#### Analysis
+The tempogram shows a stable tempo in most of the song.  
+There is a slight drop in tempo at the end of the song, after which the tempo returns to the stable tempo.  
+This might be what is called a "breakdown" in the metal genre.  
+A breakdown is where the tempo of the song "breaks" and every instrument start playing slower and darker.  
+
+#### Tempogram Track
+
+```{r, fig.width=12, fig.height=7}
 "features/tobias-p-2.json" |>
   compmus_tempogram(window_size = 8, hop_size = 1, cyclic = FALSE) |>
   ggplot(aes(x = time, y = bpm, fill = power)) +
@@ -356,17 +503,9 @@ Column {.tabset}
   theme_classic()
 ```
 
-Introduction
+
+Correlation {data-navmenu="Visualization" data-icon="ion-arrow-graph-up-right"}
 ====================================================
-
-In this portfolio we will be using a student musical corpus consisting of tracks submited by students of the course Computational Musicology.
-
-```{r}
-```
-
-Visualisation
-====================================================
-
 
 Column {.tabset}
 --------------------------------------------------------------------------
@@ -374,65 +513,158 @@ Column {.tabset}
 
 ### Tempi Historgram
 
-```{r}
+#### Analysis
+
+Besides a peak at a tempo of around 150 bpm we can see that the songs in the student musical corpus are pretty evenly distributed between 50 and 160 bpm.  
+Therefore i will be using compare other high-level features with the tempo's of the songs to see if there is any correlation.  
+I will be highlighting the my jazz track (track 1) with blue and my metal track (track 2) with red in further visualizations.
+
+#### Tempi Histogram
+
+```{r, fig.width=8, fig.height=8}
+highlight_track_1 <- c("tobias-p-1")
+highlight_track_2 <- c("tobias-p-2")
+
+highlight1 <- compmus2025 %>% filter(filename %in% highlight_track_1)
+highlight2 <- compmus2025 %>% filter(filename %in% highlight_track_2)
+
 ggplot(compmus2025, aes(x=tempo)) + geom_histogram()
 ```
 
 ### Arousal
 
-```{r}
-ggplot(compmus2025, aes(x=tempo, y=arousal)) + geom_point()
+#### Analysis
+There does not seem to be a correlation between tempo and valence.
+
+#### Arousal x Tempo
+
+```{r, fig.width=8, fig.height=8}
+ggplot(compmus2025, aes(x=tempo, y=arousal)) +
+  geom_point() + 
+  geom_point(data = highlight1, aes(x = tempo, y = arousal), color = "blue", size = 3) +
+  geom_point(data = highlight2, aes(x = tempo, y = arousal), color = "red", size = 3)
 ```
 
 ### Danceability
 
-```{r}
-ggplot(compmus2025, aes(x=tempo, y=danceability)) + geom_point()
+#### Analysis
+There does not seem to be a correlation between tempo and danceability
+
+#### Danceability x Tempo
+
+```{r, fig.width=8, fig.height=8}
+ggplot(compmus2025, aes(x=tempo, y=danceability)) +
+  geom_point() + 
+  geom_point(data = highlight1, aes(x = tempo, y = danceability), color = "blue", size = 3) +
+  geom_point(data = highlight2, aes(x = tempo, y = danceability), color = "red", size = 3)
 ```
 
 ### Engagingness
 
-```{r}
-ggplot(compmus2025, aes(x=tempo, y=engagingness)) + geom_point()
+#### Analysis
+Engagingness seems to be slightly higher in lower tempo songs.
+
+#### Engagingness x Tempo
+
+```{r, fig.width=8, fig.height=8}
+ggplot(compmus2025, aes(x=tempo, y=engagingness)) +
+  geom_point() + 
+  geom_point(data = highlight1, aes(x = tempo, y = engagingness), color = "blue", size = 3) +
+  geom_point(data = highlight2, aes(x = tempo, y = engagingness), color = "red", size = 3)
 ```
 
 ### Instrumentalness
 
-```{r}
-ggplot(compmus2025, aes(x=tempo, y=instrumentalness)) + geom_point()
+#### Analysis
+There seems to be an increase in Instrumentalness in higher tempo songs.
+
+#### Instrumentalness x Tempo
+
+```{r, fig.width=8, fig.height=8}
+ggplot(compmus2025, aes(x=tempo, y=instrumentalness)) +
+  geom_point() + 
+  geom_point(data = highlight1, aes(x = tempo, y = instrumentalness), color = "blue", size = 3) +
+  geom_point(data = highlight2, aes(x = tempo, y = instrumentalness), color = "red", size = 3)
 ```
 
 ### Valence
 
-```{r}
-ggplot(compmus2025, aes(x=tempo, y=valence)) + geom_point()
+#### Analysis
+There seems to be a slight decrease in valence in higher tempo songs.
+
+#### Valence x Tempo
+
+```{r, fig.width=8, fig.height=8}
+ggplot(compmus2025, aes(x=tempo, y=valence)) +
+  geom_point() + 
+  geom_point(data = highlight1, aes(x = tempo, y = valence), color = "blue", size = 3) +
+  geom_point(data = highlight2, aes(x = tempo, y = valence), color = "red", size = 3)
 ```
+
+### Approachability
+
+#### Analysis
+There does not seem to be a correlation between tempo and valence.
+
+#### Approachability x Tempo
+
+```{r, fig.width=8, fig.height=8}
+ggplot(compmus2025, aes(x=tempo, y=approachability)) +
+  geom_point() + 
+  geom_point(data = highlight1, aes(x = tempo, y = approachability), color = "blue", size = 3) +
+  geom_point(data = highlight2, aes(x = tempo, y = approachability), color = "red", size = 3)
+```
+
 
 Column {.tabset}
 ------------------------------------------------------
 ### Arousal x Engagingness
 
+#### Analysis
+According to this chart arousal and engagingness have a positive correlation.
+
+#### Arousal x Engagingness chart
+
 ```{r}
-ggplot(compmus2025, aes(x=arousal, y=engagingness)) + geom_point()
+ggplot(compmus2025, aes(x=arousal, y=engagingness)) +
+  geom_point() + 
+  geom_point(data = highlight1, aes(x = arousal, y = engagingness), color = "blue", size = 3) +
+  geom_point(data = highlight2, aes(x = arousal, y = engagingness), color = "red", size = 3)
 ```
 
 ### Arousal x Instrumentalness
 
+#### Analysis
+According to this chart arousal and instrumentalness have a negative correlation.
+
+#### Arousal x Engagingness chart
+
 ```{r}
-ggplot(compmus2025, aes(x=arousal, y=instrumentalness)) + geom_point()
+ggplot(compmus2025, aes(x=arousal, y=instrumentalness)) +
+  geom_point() + 
+  geom_point(data = highlight1, aes(x = arousal, y = instrumentalness), color = "blue", size = 3) +
+  geom_point(data = highlight2, aes(x = arousal, y = instrumentalness), color = "red", size = 3)
 ```
 
 ### Arousal x Danceability
+According to this chart arousal and danceability have a positive correlation.
 
 ```{r}
-ggplot(compmus2025, aes(x=arousal, y=danceability)) + geom_point()
+ggplot(compmus2025, aes(x=arousal, y=danceability)) +
+  geom_point() + 
+  geom_point(data = highlight1, aes(x = arousal, y = danceability), color = "blue", size = 3) +
+  geom_point(data = highlight2, aes(x = arousal, y = danceability), color = "red", size = 3)
 ```
-
 
 
 
 Conclusion
 ====================================================
 
-```{r}
-```
+### Conclusion
+
+From the visualizations in this portfolio we can see that even though the song is AI generated it still has a lot of features that are present in that genre, this counts for both the jazz and the metal song.  
+From this we can conclude that AI generation is pretty accurate at creating things like breakdown in a metal song or rubato in a jazz song.  
+However, when generating the songs i made sure to include prompts for the key of the song but both models were not able to recreate this.  
+The graphs i used to analyze my two track showed that jazz and metal don't have that many overlapping musical features.  
+
